@@ -6,7 +6,49 @@ global.son = METHOD(function() {
 		
 		// string
 		if (value[0] === '\'') {
-			return '"' + value.substring(1, value.length - 1).replace(/\\'/g, '\'').replace(/"/g, '\\"') + '"';
+			
+			return '"' + RUN(function() {
+				
+				var
+				// ret
+				ret = '',
+				
+				// now tab count
+				nowTabCount = 0;
+				
+				value = value.substring(1, value.length - 1).trim();
+				
+				EACH(value, function(ch, i) {
+					
+					if (nowTabCount !== -1) {
+						if (ch === '\t') {
+							nowTabCount += 1;
+							if (nowTabCount === tabCount + 1) {
+								nowTabCount = -1;
+							}
+						} else {
+							nowTabCount = -1;
+						}
+					}
+					
+					if (nowTabCount === -1) {
+						
+						if (ch === '\r' || (ch === '\\' && value[i + 1] === '\'')) {
+							// ignore.
+						} else if (ch === '"') {
+							ret += '\\"';
+						} else if (ch === '\n') {
+							ret += '\\n';
+							nowTabCount = 0;
+						} else {
+							ret += ch;
+						}
+					}
+				});
+				
+				return ret;
+				
+			}) + '"';
 		}
 		
 		// array

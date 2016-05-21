@@ -20,8 +20,14 @@ glossary
 						']', test
 							msg 'hello!',
 						test2
-							mst 'world!',
+							msg 'world!',
 						[1, 2, 3],
 						'msg', true
 					]
 				GlossSee	'markup'
+				Description '
+					I
+					AM
+					A
+					BOY
+				'
