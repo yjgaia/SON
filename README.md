@@ -17,46 +17,45 @@ console.log(json);
 ## 예
 `son`
 ```son
-glossary
-	title 'example glossary'
-	GlossDiv
-		title 'S'
-		GlossList
-			GlossEntry
-				ID			'SGML'
-				SortAs		'SGML'
-				GlossTerm	'Standard Generalized Markup Language'
-				Acronym		'SGML'
-				Abbrev		'ISO 8879:1986'
-				GlossDef
-					para			'A meta-markup language, used to create markup languages such as DocBook.'
-					GlossSeeAlso	['GML', 'XML']
-				GlossSee	'markup'
+name	'YJ Sim'
+age		29
+contact	[
+	'hanul@hanul.me',
+	'admin@btncafe.com',
+	emergency
+		phone	010-1234-5678
+		fax		010-8765-4321
+]
+address
+	country	'Korea'
+	city	'Seoul'
+description '
+	Hi, I\'m YJ Sim.
+	I am a developer.
+	Bye.
+'
 ```
 
 `json`
 ```json
 {
-	"glossary": {
-		"title": "example glossary",
-		"GlossDiv": {
-			"title": "S",
-			"GlossList": {
-				"GlossEntry": {
-					"ID": "SGML",
-					"SortAs": "SGML",
-					"GlossTerm": "Standard Generalized Markup Language",
-					"Acronym": "SGML",
-					"Abbrev": "ISO 8879:1986",
-					"GlossDef": {
-						"para": "A meta-markup language, used to create markup languages such as DocBook.",
-						"GlossSeeAlso": ["GML", "XML"]
-					},
-					"GlossSee": "markup"
-				}
-			}
-		}
-	}
+    "name": "YJ Sim",
+    "age": 29,
+    "contact": ["hanul@hanul.me", "admin@btncafe.com", {
+        "emergency": {
+            "phone": {
+                "010-1234-5678"
+            },
+            "fax": {
+                "010-8765-4321"
+            }
+        }
+    }],
+    "address": {
+        "country": "Korea",
+        "city": "Seoul"
+    },
+    "description": "Hi, I'm YJ Sim.\nI am a developer.\nBye."
 }
 ```
 
