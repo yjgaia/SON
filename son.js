@@ -105,7 +105,17 @@ global.son = METHOD(function() {
 					}
 				});
 				
-				ret += parseValue(content.substring(lastIndex).trim(), tabCount);
+				if (isStringMode === true) {
+					console.log('[son] parse error.');
+				}
+				
+				else if (arrayLevel !== 0) {
+					console.log('[son] parse error.');
+				}
+				
+				else {
+					ret += parseValue(content.substring(lastIndex).trim(), tabCount);
+				}
 				
 				return ret;
 				
@@ -228,7 +238,17 @@ global.son = METHOD(function() {
 			}
 		});
 		
-		parseLine(content.substring(lastIndex));
+		if (isStringMode === true) {
+			console.log('[son] parse error.');
+		}
+		
+		else if (arrayLevel !== 0) {
+			console.log('[son] parse error.');
+		}
+		
+		else {
+			parseLine(content.substring(lastIndex));
+		}
 		
 		if (subContent !== '') {
 			json += parse(subContent, tabCount + 1) + '\n';
