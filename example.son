@@ -1,6 +1,7 @@
-name	'YJ Sim'
-age		29
-contact	[
+name		'YJ Sim'
+age			29
+is_human	true
+contact		[
 	'hanul@hanul.me',
 	'admin@btncafe.com',
 	emergency

@@ -17,9 +17,10 @@ console.log(json);
 ## 예
 `son`
 ```son
-name	'YJ Sim'
-age		29
-contact	[
+name		'YJ Sim'
+age			29
+is_human	true
+contact		[
 	'hanul@hanul.me',
 	'admin@btncafe.com',
 	emergency
@@ -41,6 +42,7 @@ description '
 {
     "name": "YJ Sim",
     "age": 29,
+    "is_human": true,
     "contact": ["hanul@hanul.me", "admin@btncafe.com", {
         "emergency": {
             "phone": {
