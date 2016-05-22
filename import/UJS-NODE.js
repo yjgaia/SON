@@ -731,59 +731,10 @@ global.PARALLEL = METHOD({
 		// done count
 		doneCount = 0;
 
+		// only funcs
 		if (funcs === undefined) {
 			funcs = countOrArray;
-			countOrArray = undefined;
-		}
-
-		if (countOrArray !== undefined) {
-			if (CHECK_IS_ARRAY(countOrArray) !== true) {
-				count = countOrArray;
-			} else {
-				array = countOrArray;
-			}
-		}
-
-		if (count !== undefined) {
-
-			if (count === 0) {
-				funcs[1]();
-			} else {
-
-				REPEAT(count, function(i) {
-
-					funcs[0](i, function() {
-
-						doneCount += 1;
-
-						if (doneCount === count) {
-							funcs[1]();
-						}
-					});
-				});
-			}
-
-		} else if (array !== undefined) {
-
-			if (array.length === 0) {
-				funcs[1]();
-			} else {
-
-				EACH(array, function(value, i) {
-
-					funcs[0](value, function() {
-
-						doneCount += 1;
-
-						if (doneCount === array.length) {
-							funcs[1]();
-						}
-					}, i);
-				});
-			}
-
-		} else {
-
+			
 			RUN(function() {
 
 				var
@@ -805,6 +756,61 @@ global.PARALLEL = METHOD({
 					}
 				});
 			});
+		}
+		
+		else {
+			
+			if (countOrArray === undefined) {
+				funcs[1]();
+			}
+			
+			else {
+				
+				if (CHECK_IS_ARRAY(countOrArray) !== true) {
+					count = countOrArray;
+				} else {
+					array = countOrArray;
+				}
+		
+				if (count !== undefined) {
+		
+					if (count === 0) {
+						funcs[1]();
+					} else {
+		
+						REPEAT(count, function(i) {
+		
+							funcs[0](i, function() {
+		
+								doneCount += 1;
+		
+								if (doneCount === count) {
+									funcs[1]();
+								}
+							});
+						});
+					}
+		
+				} else if (array !== undefined) {
+		
+					if (array.length === 0) {
+						funcs[1]();
+					} else {
+		
+						EACH(array, function(value, i) {
+		
+							funcs[0](value, function() {
+		
+								doneCount += 1;
+		
+								if (doneCount === array.length) {
+									funcs[1]();
+								}
+							}, i);
+						});
+					}
+				}
+			}
 		}
 	}
 });
@@ -5661,34 +5667,40 @@ global.CONNECT_TO_SOCKET_SERVER = METHOD({
 				var
 				// callback name
 				callbackName;
-
-				conn.write(STRINGIFY({
-					methodName : params.methodName,
-					data : params.data,
-					sendKey : sendKey
-				}) + '\r\n');
-
-				if (callback !== undefined) {
+				
+				if (conn !== undefined) {
 					
-					callbackName = '__CALLBACK_' + sendKey;
-
-					// on callback.
-					on(callbackName, function(data) {
-
-						// run callback.
-						callback(data);
-
-						// off callback.
-						off(callbackName);
-					});
+					conn.write(STRINGIFY({
+						methodName : params.methodName,
+						data : params.data,
+						sendKey : sendKey
+					}) + '\r\n');
+	
+					if (callback !== undefined) {
+						
+						callbackName = '__CALLBACK_' + sendKey;
+	
+						// on callback.
+						on(callbackName, function(data) {
+	
+							// run callback.
+							callback(data);
+	
+							// off callback.
+							off(callbackName);
+						});
+					}
+	
+					sendKey += 1;
 				}
-
-				sendKey += 1;
 			},
 
 			// disconnect.
 			function() {
-				conn.end();
+				if (conn !== undefined) {
+					conn.end();
+					conn = undefined;
+				}
 			});
 		});
 
@@ -8690,11 +8702,16 @@ global.SOCKET_SERVER = METHOD({
 
 				var
 				// error msg
-				errorMsg = error.toString();
-
-				console.log(CONSOLE_RED('[UJS-SOCEKT_SERVER] ERROR:'), errorMsg);
-
-				runMethods('__ERROR', errorMsg);
+				errorMsg;
+				
+				if (error.code !== 'ECONNRESET' && error.code !== 'EPIPE' && error.code !== 'ETIMEDOUT' && error.code !== 'ENETUNREACH' && error.code !== 'EHOSTUNREACH' && error.code !== 'ECONNREFUSED' && error.code !== 'EINVAL') {
+					
+					errorMsg = error.toString();
+					
+					console.log(CONSOLE_RED('[UJS-SOCEKT_SERVER] ERROR:'), errorMsg);
+					
+					runMethods('__ERROR', errorMsg);
+				}
 			});
 
 			connectionListener(
@@ -8758,35 +8775,41 @@ global.SOCKET_SERVER = METHOD({
 				// callback name
 				callbackName;
 				
-				conn.write(STRINGIFY({
-					methodName : params.methodName,
-					data : params.data,
-					sendKey : sendKey
-				}) + '\r\n');
-
-				if (callback !== undefined) {
+				if (conn !== undefined && conn.writable === true) {
 					
-					callbackName = '__CALLBACK_' + sendKey;
-
-					// on callback.
-					on(callbackName, function(data) {
-
-						// run callback.
-						callback(data);
-
-						// off callback.
-						off(callbackName);
-					});
+					conn.write(STRINGIFY({
+						methodName : params.methodName,
+						data : params.data,
+						sendKey : sendKey
+					}) + '\r\n');
+	
+					if (callback !== undefined) {
+						
+						callbackName = '__CALLBACK_' + sendKey;
+	
+						// on callback.
+						on(callbackName, function(data) {
+	
+							// run callback.
+							callback(data);
+	
+							// off callback.
+							off(callbackName);
+						});
+					}
+	
+					sendKey += 1;
+					
+					clientInfo.lastReceiveTime = new Date();
 				}
-
-				sendKey += 1;
-				
-				clientInfo.lastReceiveTime = new Date();
 			},
 
 			// disconnect.
 			function() {
-				conn.end();
+				if (conn !== undefined) {
+					conn.end();
+					conn = undefined;
+				}
 			});
 		});
 
