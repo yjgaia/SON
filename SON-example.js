@@ -1,7 +1,7 @@
 require('./import/UJS-NODE.js');
-require('./son.js');
+require('./SON.js');
 
-var json = son(READ_FILE({
+var json = SON(READ_FILE({
 	path : 'example.son',
 	isSync : true
 }).toString());

@@ -1,4 +1,8 @@
-global.son = METHOD(function() {
+/**
+ * JSON으로 변환되는 간단한 데이터 표현식
+ */
+global.SON = METHOD(function() {
+	'use strict';
 	
 	var
 	// parse value.
@@ -106,11 +110,11 @@ global.son = METHOD(function() {
 				});
 				
 				if (isStringMode === true) {
-					console.log('[son] parse error.');
+					console.log('[SON] parse error.');
 				}
 				
 				else if (arrayLevel !== 0) {
-					console.log('[son] parse error.');
+					console.log('[SON] parse error.');
 				}
 				
 				else {
@@ -166,7 +170,7 @@ global.son = METHOD(function() {
 			nowTabCount = 0,
 			
 			// value
-			value = undefined;
+			value;
 			
 			EACH(line, function(ch) {
 				if (ch === '\t') {
@@ -239,11 +243,11 @@ global.son = METHOD(function() {
 		});
 		
 		if (isStringMode === true) {
-			console.log('[son] parse error.');
+			console.log('[SON] parse error.');
 		}
 		
 		else if (arrayLevel !== 0) {
-			console.log('[son] parse error.');
+			console.log('[SON] parse error.');
 		}
 		
 		else {

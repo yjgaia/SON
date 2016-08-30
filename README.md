@@ -1,12 +1,12 @@
-# son
-JSON으로 변환되는 간단한 표현식
+# SON
+JSON으로 변환되는 간단한 데이터 표현식
 
 ## 실행 방법
 ```javascript
 require('./import/UJS-NODE.js');
-require('./son.js');
+require('./SON.js');
 
-var json = son(READ_FILE({
+var json = SON(READ_FILE({
 	path : 'example.son',
 	isSync : true
 }).toString());
@@ -15,7 +15,7 @@ console.log(json);
 ```
 
 ## 예
-`son`
+`SON`
 ```son
 name		'YJ Sim'
 age			29
@@ -37,7 +37,7 @@ description '
 '
 ```
 
-`json`
+`JSON`
 ```json
 {
     "name": "YJ Sim",
