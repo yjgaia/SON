@@ -3,13 +3,20 @@ JSON으로 변환되는 간단한 데이터 표현식
 
 ## 실행 방법
 ```javascript
-require('./import/UJS-NODE.js');
+// import UPPERCASE-CORE.
+require('uppercase-core');
+
+INIT_OBJECTS();
+
+// import SON.
 require('./SON.js');
 
-var json = SON(READ_FILE({
+let sonCode = READ_FILE({
 	path : 'example.son',
 	isSync : true
-}).toString());
+}).toString();
+
+let json = SON(sonCode);
 
 console.log(json);
 ```
