@@ -1,9 +1,7 @@
-// import UPPERCASE-CORE.
 require('uppercase-core');
 
 INIT_OBJECTS();
 
-// import SON.
 require('./SON.js');
 
 let sonCode = READ_FILE({
