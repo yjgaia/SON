@@ -1,28 +1,21 @@
 /**
  * JSON으로 변환되는 간단한 데이터 표현식
  */
-global.SON = METHOD(function() {
-	'use strict';
+global.SON = METHOD(() => {
 	
-	var
-	// parse value.
-	parseValue = function(value, tabCount) {
+	let parseValue = (valueContent, tabCount) => {
 		
 		// string
-		if (value[0] === '\'') {
+		if (valueContent[0] === '\'') {
 			
-			return '"' + RUN(function() {
+			return '"' + RUN(() => {
 				
-				var
-				// ret
-				ret = '',
+				let ret = '';
+				let nowTabCount = 0;
 				
-				// now tab count
-				nowTabCount = 0;
+				valueContent = valueContent.substring(1, valueContent.length - 1).trim();
 				
-				value = value.substring(1, value.length - 1).trim();
-				
-				EACH(value, function(ch, i) {
+				EACH(valueContent, (ch, i) => {
 					
 					if (nowTabCount !== -1) {
 						if (ch === '\t') {
@@ -37,7 +30,7 @@ global.SON = METHOD(function() {
 					
 					if (nowTabCount === -1) {
 						
-						if (ch === '\r' || (ch === '\\' && value[i + 1] === '\'')) {
+						if (ch === '\r' || (ch === '\\' && valueContent[i + 1] === '\'')) {
 							// ignore.
 						} else if (ch === '"') {
 							ret += '\\"';
@@ -56,30 +49,18 @@ global.SON = METHOD(function() {
 		}
 		
 		// array
-		else if (value[0] === '[') {
+		else if (valueContent[0] === '[') {
 			
-			return '[' + RUN(function() {
+			return '[' + RUN(() => {
 				
-				var
-				// content
-				content = value.substring(1, value.length - 1).trim(),
+				let content = valueContent.substring(1, valueContent.length - 1).trim();
+				let lastIndex = 0;
+				let isStringMode;
+				let arrayLevel = 0;
+				let v = '';
+				let ret = '';
 				
-				// last index
-				lastIndex = 0,
-				
-				// is string mode
-				isStringMode,
-				
-				// array level
-				arrayLevel = 0,
-				
-				// value
-				v = '',
-				
-				// ret
-				ret = '';
-				
-				EACH(content, function(ch, i) {
+				EACH(content, (ch, i) => {
 					
 					if (isStringMode !== true && ch === '[') {
 						arrayLevel += 1;
@@ -110,11 +91,11 @@ global.SON = METHOD(function() {
 				});
 				
 				if (isStringMode === true) {
-					console.log('[SON] parse error.');
+					SHOW_ERROR('SON', 'parse error.');
 				}
 				
 				else if (arrayLevel !== 0) {
-					console.log('[SON] parse error.');
+					SHOW_ERROR('SON', 'parse error.');
 				}
 				
 				else {
@@ -127,52 +108,34 @@ global.SON = METHOD(function() {
 		}
 		
 		// boolean, number
-		else if (value === 'true' || value === 'false' || isNaN(value) !== true) {
-			return value;
+		else if (valueContent === 'true' || valueContent === 'false' || isNaN(valueContent) !== true) {
+			return valueContent;
 		}
 		
 		else {
 			
-			REPEAT(tabCount, function() {
-				value = '\t' + value;
+			REPEAT(tabCount, () => {
+				valueContent = '\t' + valueContent;
 			});
 			
-			return parse(value, tabCount);
+			return parse(valueContent, tabCount);
 		}
-	},
+	}
 	
-	// parse.
-	parse = function(content, tabCount) {
-		//REQUIRED: content
-		//REQUIRED: tabCount
+	let parse = (content, tabCount) => {
 		
-		var
-		// json
-		json = '',
+		let json = '';
 		
-		// sub content
-		subContent = '',
+		let subContent = '';
+		let lastIndex = 0;
 		
-		// last index
-		lastIndex = 0,
+		let isStringMode;
+		let arrayLevel = 0;
 		
-		// is string mode
-		isStringMode,
-		
-		// array level
-		arrayLevel = 0,
-		
-		// parse line.
-		parseLine = function(line) {
+		let parseLine = (line) => {
 			
-			var
-			// now tab count
-			nowTabCount = 0,
-			
-			// value
-			value;
-			
-			EACH(line, function(ch) {
+			let nowTabCount = 0;
+			EACH(line, (ch) => {
 				if (ch === '\t') {
 					nowTabCount += 1;
 				} else {
@@ -182,33 +145,36 @@ global.SON = METHOD(function() {
 			
 			if (line.trim() !== '') {
 				
+				// 탭 수가 같으면 여기까지의 내용을 해석
 				if (nowTabCount === tabCount) {
 					
-					// parse sub json.
+					let valueContent;
+					
 					if (subContent !== '') {
 						json += parse(subContent, tabCount + 1) + ',\n';
 						subContent = '';
 					}
 					
-					REPEAT(tabCount + 1, function() {
+					REPEAT(tabCount + 1, () => {
 						json += '\t';
 					});
 					
+					line = line.trim();
+					
 					// find name.
 					json += '"';
-					line = line.trim();
-					EACH(line, function(ch, i) {
+					EACH(line, (ch, i) => {
 						if (ch === ' ' || ch === '\t') {
-							value = line.substring(i).trim();
+							valueContent = line.substring(i).trim();
 							return false;
 						}
 						json += ch;
 					});
 					json += '": ';
 					
-					// parse value.
-					if (value !== undefined) {
-						json += parseValue(value, tabCount + 1) + ',\n';
+					// parse value content.
+					if (valueContent !== undefined) {
+						json += parseValue(valueContent, tabCount + 1) + ',\n';
 					}
 				}
 				
@@ -218,16 +184,16 @@ global.SON = METHOD(function() {
 			}
 		};
 		
-		EACH(content, function(ch, i) {
+		EACH(content, (ch, i) => {
 			
+			// 배열
 			if (isStringMode !== true && ch === '[') {
 				arrayLevel += 1;
-			}
-			
-			else if (isStringMode !== true && ch === ']') {
+			} else if (isStringMode !== true && ch === ']') {
 				arrayLevel -= 1;
 			}
 			
+			// 문자열
 			else if (ch === '\'' && content[i - 1] !== '\\') {
 				if (isStringMode === true) {
 					isStringMode = false;
@@ -236,20 +202,24 @@ global.SON = METHOD(function() {
 				}
 			}
 			
+			// 배열도 문자열도 아닌 경우 한 줄 해석
 			else if (isStringMode !== true && arrayLevel === 0 && ch === '\n') {
 				parseLine(content.substring(lastIndex, i));
 				lastIndex = i + 1;
 			}
 		});
 		
+		// 아직 문자열 모드인 경우
 		if (isStringMode === true) {
-			console.log('[SON] parse error.');
+			SHOW_ERROR('SON', 'parse error.');
 		}
 		
+		// 아직 배열 모드인 경우
 		else if (arrayLevel !== 0) {
-			console.log('[SON] parse error.');
+			SHOW_ERROR('SON', 'parse error.');
 		}
 		
+		// 아직 남아있는 내용이 있는 경우
 		else {
 			parseLine(content.substring(lastIndex));
 		}
@@ -260,7 +230,7 @@ global.SON = METHOD(function() {
 			json = json.substring(0, json.length - 2) + '\n';
 		}
 		
-		REPEAT(tabCount, function() {
+		REPEAT(tabCount, () => {
 			json += '\t';
 		});
 		
@@ -269,7 +239,7 @@ global.SON = METHOD(function() {
 	
 	return {
 		
-		run : function(content) {
+		run : (content) => {
 			//REQUIRED: content
 			
 			return parse(content, 0);
