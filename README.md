@@ -29,8 +29,8 @@ contact		[
 	'hanul@hanul.me',
 	'admin@btncafe.com',
 	emergency
-		phone	010-1234-5678
-		fax		010-8765-4321
+		phone	'010-1234-5678'
+		fax		'010-8765-4321'
 ]
 address
 	country	'Korea'
@@ -50,12 +50,8 @@ description '
     "is_human": true,
     "contact": ["hanul@hanul.me", "admin@btncafe.com", {
         "emergency": {
-            "phone": {
-                "010-1234-5678"
-            },
-            "fax": {
-                "010-8765-4321"
-            }
+            "phone": "010-1234-5678",
+            "fax": "010-8765-4321"
         }
     }],
     "address": {
